@@ -1,73 +1,41 @@
-const data = require('../data');
+const pool = require('../db');
 
-function getTodos() {
-    return data.todos;
+async function  getTodos() {
+    const [result,] = await pool.query('SELECT * FROM todos');
+    return result;
 }
-
-function getTodoById(id) {
-    return data.todos.find(todo => todo.id == id);
+async function  getTodosByListId(list_id) {
+    const [result,] = await pool.query('SELECT * FROM todos where list_id',[list_id]);
+    return result;
 }
-
-function deleteTodo(id) {
-    const idx = data.todos.findIndex(todo => todo.id == id);
-    if (idx > -1) {
-        //restituisco tutto l'array meno l'elemento da eliminare
-        const ele = data.todos.splice(idx, 1);
-        return ele;
-    }
-    //e non è andato a buon fine
-    return 0;
+async function getTodoById( id) {
+    const [result,] = await pool.query('SELECT * FROM todos where id=?',[id]);
+     return result[0];
 }
-//uso la destrutturazione per assegnare i nomi
-function addTodo({
-    todo,
-    completed,
-    list
-}) {
-    const newtodo = {
-        todo,
-        completed,
-        list
-    }
-    data.todos.unshift(newtodo);
-    return newtodo;
+async function deleteTodo( id) {
+    const [result,] = await pool.query('DELETE FROM todos where id=?',[id]);
+    return result.affectedRows ;
 }
-//se aggiorno il todo in questo modo non prendo l'indice del todo ma l'indice dell'array
+async function addTodo({todo, completed, list_id}){
+    const created_at = new Date();
+    const [result,] = await pool.query('INSERT INTO todos (todo,  completed,list_id,created_at) values (?,?,?,?)',[todo,completed,list_id,created_at]);
 
-// function updateTodo(id, newTodo) {
-//     const oldTodo = getTodoById(id);
-//     //se esiste oldtodo
-//     //modifico solo i dati che vengono modificati
-//     //destrutturo il vecchio oggetto, e il nuovo
-//     //e sovrascrivo solo i parametri modificati
-//     if (oldTodo) {
-//         data.todos[id] = {
-//             ...oldTodo,
-//             ...newTodo
-//         };
-//         return data.todos[id];
-//     }
-//     return false;
-
-// }
-function updateTodo(id, newTodo) {
-    const idx = data.todos.findIndex(todo => todo.id == id);
-   
-    if ( idx !== -1) {
-        data.todos[idx] = {
-            ...data.todos[idx],
-            ...newTodo
-        };
-        return data.todos[idx];
-    }
-    return false;
+    //  const list =  await getListById(result.insertId) ;
+    return {id: result.insertId, todo, created_at, list_id};
+}
+async function updateTodo(id, {todo, list_id, completed}){
+    console.log(todo, list_id);
+    completed = completed || 0;
+    const updated_at = new Date();
+    const [result,] = await pool.query('UPDATE  todos SET todo =?, updated_at=?, list_id=?,completed= ? where id=?',[todo, updated_at,list_id,completed, id]);
+    return getTodoById(id);
 
 }
-
 module.exports = {
+    getTodosByListId,
     getTodos,
     getTodoById,
     deleteTodo,
     addTodo,
     updateTodo
-}
+};
