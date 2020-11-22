@@ -1,35 +1,28 @@
-const pool = require('../db');
+//CRUD CON SEQUELIZE 
 
+const List = require('../models').List;
+const  attributes = ['id','name','userId','createdAt'];
 async function getLists() {
 
-   const [result,] = await pool.query('SELECT * FROM lists');
-   return result;
+  return  List.findAll({
+      attributes,
+      limit: 20
+  });
+
 }
 async function getListById( id) {
-    const [result,] = await pool.query('SELECT * FROM lists where id=?',[id]);
-    //la query ritornerà a sua volta un array e per questo prenderò il primo risultato
-    return result[0];
+    return  List.findByPk(id, { attributes});
 }
 async function deleteList( id) {
-    const [result,] = await pool.query('DELETE FROM lists where id=?',[id]);
-    /**il risultato viene restituito in result.affectedRows */
-    console.log(result);
-    return result.affectedRows ;
+   return  List.destroy({where:{id}});
+
 }
 async function addList(name){
-    const created_at = new Date();
-    const [result,] = await 
-    pool.query('INSERT INTO lists (name,user_id,created_at) values (?,?,?)',
-    [name,1,created_at]);
-
-  //  const list =  await getListById(result.insertId) ;
-    return {id: result.insertId, name, user_id:1,created_at};
+    return List.create({ userId:1, name});
 
 }
 async function updateList(id, name){
-    const updated_at = new Date();
-    const [result,] = await pool.query('UPDATE  lists SET name =?, updated_at=? where id=?',[name, updated_at,id]);
-    return {id, name, user_id:1, updated_at}
+  return  List.update({name}, {where:{id}});
 
 
 }

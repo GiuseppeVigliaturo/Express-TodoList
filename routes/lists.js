@@ -1,32 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const {
-    updateList,
-    addList,
-    deleteList,
-    getListById,
-    getLists
-} = require('../controllers/listsController');
+const { updateList, addList,deleteList, getListById, getLists} = require('../controllers/listsController');
+
 const {getTodosByListId} = require('../controllers/todosController');
-
-
-//ora i dati li prendo dal db ptramite il pacchetto pool e non più dal file data.json
-//pool restituisce una promise quindi la chiamata è sempre quella ma utilizzo asyn e await
-//con il blocco try catch
-
-
-
-
-router.get('/:list_id([0-9]+)/todos', async (req, res)=>{
-    try{
-        const result = await getTodosByListId(req.params.list_id);
-
-        res.json(result);
-    } catch (e) {
-        res.status(500).send(e.toString());
-    }
-
-});
 router.get('/', async (req, res)=>{
     try{
         const result = await getLists();
@@ -38,6 +14,16 @@ router.get('/', async (req, res)=>{
 
 });
 
+router.get('/:list_id([0-9]+)/todos', async (req, res)=>{
+    try{
+        const result = await getTodosByListId(req.params.list_id);
+
+        res.json(result);
+    } catch (e) {
+        res.status(500).send(e.toString());
+    }
+
+});
 router.get('/:id([0-9]+)', async (req, res)=>{
     try {
         const result = await getListById(req.params.id);
@@ -68,7 +54,7 @@ router.post('/', async (req, res)=>{
 router.patch('/:id([0-9]+)', async (req, res)=>{
    try {
        const updList =await updateList(req.params.id, req.body.name);
-       res.status(updList ? 200: 404).json(updList ? updList : ' Record not found');
+       res.status(updList[0] ? 200: 404).json(updList[0] ? updList[0] : ' Record not found');
    }catch (e) {
        res.status(500).send(e.toString());
    }

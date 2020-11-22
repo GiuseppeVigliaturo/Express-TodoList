@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       allowNull: false,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      //se non metto autoincrement mi da errore se vado ad aggiungere un utente/lista/todo
+      autoIncrement: true
     },
     name: {
       type:DataTypes.STRING,
