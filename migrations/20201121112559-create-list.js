@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Lists', {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.createTable('lists', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -10,30 +10,29 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull:false
+        allowNull: false
       },
-      userId: {
+     userId: {
         type: Sequelize.BIGINT(12),
-         allowNull: false,
-         index:true,
-         references:{
-           model:'users',
-           key:'id'
-         }
+        references: {
+          model: 'users',
+          key:'id'
+        },
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+          defaultValue:Sequelize.fn('NOW')
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue:Sequelize.fn('NOW')
       }
     });
   },
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('lists');
+  down: (queryInterface, Sequelize) => {
+    return queryInterface.dropTable('lists');
   }
 };

@@ -1,34 +1,24 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class List extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
+  const List = sequelize.define('List', {
+    id: {
+      allowNull: false,
+      type: DataTypes.BIGINT(12),
+      primaryKey: true
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    userId: {
+      type: DataTypes.BIGINT(12),
+      allowNull: false
+
+  }
+  }, {});
+  List.associate = function(models) {
+    List.belongsTo(models.User,{through: 'List', foreignKey: 'userId'}
+    );
   };
-  List.init({
-     id: {
-        allowNull: false,
-        type: Sequelize.BIGINT(12)
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull:false
-      },
-      userId: {
-        type: Sequelize.BIGINT(12),
-         allowNull: false
-      }
-  }, {
-    sequelize,
-    modelName: 'List',
-  });
   return List;
 };

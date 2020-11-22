@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Todos', {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.createTable('todos', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,29 +14,33 @@ module.exports = {
       },
       listId: {
         type: Sequelize.BIGINT(12),
-         allowNull: false,
-         index:true,
-         references:{
-           model:'lists',
-           key:'id'
-         }
+        allowNull: false,
+        index: true,
+        references: {
+          model: 'lists',
+          key: 'id'
+        }
+
       },
       completed: {
-        type: Sequelize.BOOLEAN
+        type:Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue:Sequelize.fn('NOW')
+
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue:Sequelize.fn('NOW')
       }
     });
   },
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Todos');
+  down: (queryInterface, Sequelize) => {
+    return queryInterface.dropTable('todos');
   }
 };
