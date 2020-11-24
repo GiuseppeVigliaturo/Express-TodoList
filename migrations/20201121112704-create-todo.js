@@ -14,15 +14,14 @@ module.exports = {
       },
       listId: {
         type: Sequelize.BIGINT(12),
-        
+      //  allowNull: false,
         index: true,
         references: {
           model: 'lists',
           key: 'id'
         },
-        
-        onDelete :'CASCADE',
-        OnUpdate :'SET NULL'
+        onDelete : 'CASCADE',
+        onUpdate:'SET NULL'
 
       },
       completed: {

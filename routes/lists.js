@@ -1,63 +1,84 @@
 const express = require('express');
 const router = express.Router();
-const { updateList, addList,deleteList, getListById, getLists} = require('../controllers/listsController');
-
+//salvo in una variabile tutti i metodi del controller e ci accedo con la dot notation
+const list = require('../controllers/listsController');
 const {getTodosByListId} = require('../controllers/todosController');
+const  getValues = models => models.map(rec => rec.toJSON());
 router.get('/', async (req, res)=>{
     try{
-        const result = await getLists();
-
-        res.json(result);
+        const {q}  =  req.query;
+        const result = getValues(await list.getLists({q}));
+        res.render('index', 
+        {lists : result, 
+            q
+        });
+        
     } catch (e) {
         res.status(500).send(e.toString());
     }
 
 });
-
 router.get('/:list_id([0-9]+)/todos', async (req, res)=>{
     try{
-        const result = await getTodosByListId(req.params.list_id);
-
-        res.json(result);
+        const listId = req.params.list_id;
+        const listObj = await list.getListById(listId);
+        //console.log(list)
+        const result = getValues(await getTodosByListId(listId));
+        console.log(result);
+        res.render('todos', {todos : result, list_name: listObj.name});
     } catch (e) {
         res.status(500).send(e.toString());
     }
 
 });
-router.get('/:id([0-9]+)', async (req, res)=>{
-    try {
-        const result = await getListById(req.params.id);
-        res.status(result ? 200 : 404).json(result ? result : null);
-    }catch (e) {
-            res.status(500).send(e.toString());
-        }
-});
 
-router.delete('/:id([0-9]+)', async (req, res)=>{
-    try {
-        const deleted = await deleteList(req.params.id);
-        res.status(deleted ? 200 : 404).json(deleted ? deleted : null);
-    }catch (e) {
-        res.status(500).send(e.toString());
+router.delete('/:list_id([0-9]+)', async (req,resp) =>{
+    try{
+     const deleted = await list.deleteList(req.params.list_id);
+     resp.redirect('/');
+    //resp.status(deleted ? 200 : 404).json(deleted ? deleted : null);
+    } catch (e) {
+        resp.status(500).send(e.toString());
     }
 });
-
-router.post('/', async (req, res)=>{
-   try{
-       const result = await addList(req.body.name);
-       res.json(result);
-   }catch (e) {
-       res.status(500).send(e.toString());
-   }
+router.get('/:list_id([0-9]+)/edit', async (req, res)=>{
+    try{
+        const listId = req.params.list_id;
+        const listObj = await list.getListById(listId);
+        const values = listObj.dataValues;
+        console.log(values);
+        res.render('list/edit', {...values});
+    } catch (e) {
+        res.status(500).send(e.toString());
+    }
 
 });
-router.patch('/:id([0-9]+)', async (req, res)=>{
-   try {
-       const updList =await updateList(req.params.id, req.body.name);
-       res.status(updList[0] ? 200: 404).json(updList[0] ? updList[0] : ' Record not found');
-   }catch (e) {
-       res.status(500).send(e.toString());
-   }
 
+router.patch('/:list_id([0-9]+)', async (req,resp) =>{
+    try{
+        const updated = await list.updateList(req.params.list_id, req.body.list_name);
+        resp.redirect('/');
+        // resp.status(deleted ? 200 : 404).json(deleted ? deleted : null);
+    } catch (e) {
+        // resp.status(500).send(e.toString());
+    }
+});
+router.get('/new', async (req, res)=>{
+    try{
+
+        res.render('list/newlist');
+    } catch (e) {
+        res.status(500).send(e.toString());
+    }
+
+});
+router.post('/', async (req,resp) =>{
+    try{
+        const updated = await list.addList( req.body.list_name);
+        resp.redirect('/');
+        // resp.status(deleted ? 200 : 404).json(deleted ? deleted : null);
+    } catch (e) {
+        // resp.status(500).send(e.toString());
+    }
 });
 module.exports = router;

@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const todo = sequelize.define('todo', {
+  const todo = sequelize.define('Todo', {
     id: {
       allowNull: false,
       type: DataTypes.BIGINT(12),
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {});
   todo.associate = function(models) {
-    // associations can be defined here
+    todo.belongsTo(models.List);
   };
   return todo;
 };

@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const List = sequelize.define('List', {
+  const list = sequelize.define('List', {
     id: {
       allowNull: false,
       type: DataTypes.BIGINT(12),
@@ -17,9 +17,8 @@ module.exports = (sequelize, DataTypes) => {
 
   }
   }, {});
-  List.associate = function(models) {
-    List.belongsTo(models.User,{through: 'List', foreignKey: 'userId'}
-    );
+  list.associate = function(models) {
+   list.hasMany(models.Todo);
   };
-  return List;
+  return list;
 };
