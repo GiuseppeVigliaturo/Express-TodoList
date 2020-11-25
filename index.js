@@ -1,53 +1,41 @@
-//installato express lo importo
-const express = require("express");
-//creo una istanza di express
+const express = require('express');
 const app = express();
-const methodOverride = require('method-override');
+
+const flash = require('connect-flash');
+const {redirectLogin, redirectHome,setSession,overrideMethods} = require('./middlewares');
+
+// configure session
+
+
+
 // C R U D
-//se nel body della risposta vogliamo avere chiave valore 
-//come se fossero i parametri via url ma nel body della richiesta
-//se mettiamo true anche i null e le stringhe vuote verranno mappati
-app.use(express.urlencoded({
-    extended: true
-}));
-//se vogliamo gestire dei dati in formato json nel body della richiesta http
-//come una riciesta pura senza alcuna codifica
+app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-//importo bootstrap da node modules
-//app.use(express.static(__dirname + '/node_modules/bootstrap/dist'));
+app.use(setSession());
+app.use(overrideMethods());
+app.use(flash());
+
+// static files
+app.use(express.static(__dirname + '/public'));
+app.use('/axios',express.static(__dirname + '/node_modules/axios/dist'));
+//app.use('/bootstrap',express.static(__dirname + '/node_modules/bootstrap/dist'));
+app.use('/sweetalert2',express.static(__dirname + '/node_modules/sweetalert2/dist'));
+app.use(express.static(__dirname + '/public'));
 const ehb = require('express-handlebars');
 
-/**Devo dire a express-js di usare un engine per processare le nostre pagine 
- * handlebars
- */
-//specifico l'estensione che avranno i file e l'engine da usare
-app.engine('.hbs',ehb({extname:'.hbs'}));
-//una volta inizializzato l'engine dobbiamo dire a express cosa impostare
-app.set('view engine','.hbs');//devo creare una cartella views
+app.engine('.hbs', ehb({extname:'.hbs'}));
+app.set('view engine','.hbs');
 
 
-//importiamo il router
-//app.use('/todos/:id',logger);
-const todosRoutes = require("./routes/api/todos");
-const listsRoutes = require('./routes/api/lists');
-app.use(methodOverride(function (req, res) {
-    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-        // look in urlencoded POST bodies and delete it
-        var method = req.body._method
-        delete req.body._method
-        return method
-    }
-}))
-//per utilizzare il router , indichiamo quale rotta usare
-//per utilizzare le rotte definite nel file delle rotte 
-//quindi /todos è la rotta di partenza e il router è todosRoutes 
-//ad esempiodove ci sono tutte le rotte a partire da /todos
-app.use("/api/todos", todosRoutes);
-app.use('/api/lists', listsRoutes);
+// routes management
+const todosRoutes  = require('./routes/api/todos');
+const listsRoutes  = require('./routes/api/lists');
+const autRoutes = require('./routes/auth');
 
-app.use(['/lists','/'], require('./routes/lists'));
-//uso un array di liste cosi sia con / che con /lists vedo tutte le liste
-// app.get('/',(req,res) =>{
-//     res.render('index');
-// });
-app.listen(4000, () => console.log("listening on port 4000"));
+app.use('/auth',redirectHome, autRoutes);
+
+app.use('/api/todos', redirectLogin,todosRoutes);
+app.use('/api/lists',redirectLogin,listsRoutes );
+app.use(['/lists','/'], redirectLogin, require('./routes/lists'));
+
+app.listen(4000, ()=> console.log('listening on port 4000'));

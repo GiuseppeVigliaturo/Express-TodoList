@@ -1,11 +1,11 @@
-<script>
+{{!-- <script>
     function updateList(btn) {
         const method = document.getElementById('method');
         const form = document.getElementById('list');
         btn.value === 'DELETE' ? method.value = 'DELETE' : method.value = 'PATCH';
         form.submit();
     }
-</script>
+</script> --}}
 <form method="post" action="/lists/{{this.id}}" name="list" id="list">
     <div class="row">
         <div class="col-md-9 form-group">
@@ -25,3 +25,12 @@
         </div>
     </div>
 </form>
+{{!-- modifica usando la libreria sweetalert2 --}}
+<script>
+    function updateList(btn) {
+        const method = document.getElementById('method');
+        const form = document.getElementById('list');
+        method.value = btn.value === 'DELETE' ? 'DELETE' : 'PATCH';
+        method.value === 'PATCH' ? form.submit() : showConfirmMsg('delete list', 'Are you sure you want to delete this item?', form.name)
+    }
+</script>

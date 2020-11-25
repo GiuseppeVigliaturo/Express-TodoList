@@ -6,7 +6,14 @@
         form.submit();
     }
 </script>
+
 <h2>INSERT NEW LIST</h2>
+
+{{#if errors}}
+{{#each errors}}
+<div class="alert alert-danger">{{this}}</div>
+{{/each}}
+{{/if}}
 <form method="post" action="/lists" name="list" id="list">
     <div class="row">
         <div class="col-md-9 form-group">
@@ -18,10 +25,9 @@
             </button>
 
 
-            <button value="BACK" onclick="location.href='/'" class="btn btn-danger" title="BACK TO LIST LIST">
+            <a href="/" class="btn btn-danger" title="BACK TO LIST LIST">
                 BACK
-
-            </button>
+            </a>
 
         </div>
     </div>

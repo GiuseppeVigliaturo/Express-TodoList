@@ -9,7 +9,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+       validate : {
+        notEmpty : {
+          msg : 'Column name cannot be empty'
+        },
+        len : {
+          args : [6, 255],
+          msg : 'Name length must be between 6 and 255'
+        }
+      }
     },
     userId: {
       type: DataTypes.BIGINT(12),
@@ -19,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   list.associate = function(models) {
    list.hasMany(models.Todo);
+   list.belongsTo(models.User);
   };
   return list;
 };
