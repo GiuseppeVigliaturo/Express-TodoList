@@ -1,6 +1,6 @@
 <header>
     <h2>{{title}}</h2>
-    <!-- Fixed navbar -->
+    
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <a class="navbar-brand" href="#">MY TODO LIST</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
@@ -21,7 +21,7 @@
                 {{#if user}}
                 <li class="nav-item nav-link">{{user.name}}</li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/auth/logout">Logout</a>
+                    <a class="nav-link" href="/logout">Logout</a>
                 </li>
                 {{else }}
                 <li class="nav-item">

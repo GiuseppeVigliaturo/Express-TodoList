@@ -1,3 +1,4 @@
+  
 const express = require('express');
 const router = express.Router();
 const auth = require('../controllers/authController');
@@ -11,7 +12,7 @@ router.get('/signup', async (req, res)=>{
 
 });
 router.get('/login', async (req, res)=>{
-
+console.log("login");
     res.render('login', {
             signup : false
         }
@@ -19,6 +20,19 @@ router.get('/login', async (req, res)=>{
 
 
 });
+router.post('/login', async (req, res)=>{
+try{
+    const {name,email, id} = await auth.login(req.body);
+    const User = {name,email, id};
+    req.session.user = User;
+    res.status(id ? 200 : 404).json(id ? User : null);
+} catch (e) {
+    const errorMessages = e.message;
+    res.status(500).send({message: errorMessages});
+}
+});
+
+
 router.post('/register', async (req, res)=>{
     try{
         const {name,email, id} = await auth.register(req.body);

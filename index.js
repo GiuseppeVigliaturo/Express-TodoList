@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 
 const flash = require('connect-flash');
-const {redirectLogin, redirectHome,setSession,overrideMethods} = require('./middlewares');
+const {redirectLogin, redirectHome,setSession,overrideMethods} = require('./middlewares/index');
 
 // configure session
 
@@ -20,7 +20,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/axios',express.static(__dirname + '/node_modules/axios/dist'));
 //app.use('/bootstrap',express.static(__dirname + '/node_modules/bootstrap/dist'));
 app.use('/sweetalert2',express.static(__dirname + '/node_modules/sweetalert2/dist'));
-app.use(express.static(__dirname + '/public'));
+
 const ehb = require('express-handlebars');
 
 app.engine('.hbs', ehb({extname:'.hbs'}));
@@ -37,5 +37,15 @@ app.use('/auth',redirectHome, autRoutes);
 app.use('/api/todos', redirectLogin,todosRoutes);
 app.use('/api/lists',redirectLogin,listsRoutes );
 app.use(['/lists','/'], redirectLogin, require('./routes/lists'));
+
+//escludo la rotta di logout dai middlewares e la metto come rotta principale 
+//altrimenti verificato che l'utente esiste mi redirezionerebbe direttamente alla home page
+//senza eseguire il codice di  eliminare la sessione 
+app.get('/logout', async (req, res)=>{
+      req.session.destroy(()=>{
+         res.redirect("/auth/login");
+      })
+
+});
 
 app.listen(4000, ()=> console.log('listening on port 4000'));

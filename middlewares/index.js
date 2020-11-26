@@ -19,14 +19,15 @@ const  redirectLogin = (req, resp, next)=>{
     }
 };
 const setSession = () => {
-     return   session({
+    console.log("sessione avviata");
+     return session({
             cookie: {
                 maxAge: MAX_AGE,
                 secure: DEFAULT_ENV === 'production'
             },
 
             secret: SECRET,
-            resave: false,
+             resave: false,
             saveUninitialized: false,
         });
     }

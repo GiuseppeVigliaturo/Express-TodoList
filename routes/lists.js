@@ -12,6 +12,7 @@ router.get('/', async (req, res)=>{
         res.render('index', 
         {lists : result, 
             q,
+            user : req.session.user,
             errors: req.flash('errors'),
             messages: req.flash('messages')
         });
@@ -28,7 +29,10 @@ router.get('/:list_id([0-9]+)/todos', async (req, res)=>{
         //console.log(list)
         const result = getValues(await getTodosByListId(listId));
         //console.log(result);
-        res.render('todos', {todos : result, list_name: listObj.name});
+        res.render('todos', {
+            todos : result, 
+            list_name: listObj.name,
+            user : req.session.user});
     } catch (e) {
         res.status(500).send(e.toString());
     }
@@ -50,7 +54,10 @@ router.get('/:list_id([0-9]+)/edit', async (req, res)=>{
         const listObj = await list.getListById(listId);
         const values = listObj.dataValues;
         //console.log(values);
-        res.render('list/edit', {...values});
+        res.render('list/edit', 
+        {...values,
+            user : req.session.user
+        });
     } catch (e) {
         res.status(500).send(e.toString());
     }
@@ -71,7 +78,9 @@ router.patch('/:list_id([0-9]+)', async (req,resp) =>{
 router.get('/new', async (req, res)=>{
     try{
         
-        res.render('list/newlist');
+        res.render('list/newlist',{
+            user : req.session.user
+        });
     } catch (e) {
         res.status(500).send(e.toString());
     }

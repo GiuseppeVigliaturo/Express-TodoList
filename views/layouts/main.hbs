@@ -10,8 +10,13 @@
     }
 </style>
 <body class="d-flex flex-column h-100">
-    {{> navheader q = q}}
+    {{!-- HB prima di reindirizzare index carica i partials e un metodo per 
+    passare tutte le variabili che passiamo nelle rotte alle viste corrispondenti 
+    è quello di definire il contesto passando this --}}
+    {{!--  se devo passare una singola variabile va bene anche passarla al partial singolarmente 
+    '\{{> navheader q = q\ --}}
 
+    {{> navheader this}}
     <!-- Begin page content -->
     <main role="main" class="flex-shrink-0">
         <div class="container">
